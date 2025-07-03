@@ -1,0 +1,210 @@
+---
+interface Props {
+  title: string;
+  currentPage?: string;
+}
+
+const { title, currentPage = "" } = Astro.props;
+
+// Generate breadcrumbs based on current page
+const generateBreadcrumbs = (currentPage: string) => {
+  const breadcrumbs = [
+    { name: 'Admin', href: '/admin/dashboard' }
+  ];
+  
+  if (currentPage && currentPage !== 'dashboard') {
+    breadcrumbs.push({ 
+      name: currentPage.charAt(0).toUpperCase() + currentPage.slice(1), 
+      href: `/admin/${currentPage}` 
+    });
+  }
+  
+  return breadcrumbs;
+};
+
+const breadcrumbs = generateBreadcrumbs(currentPage);
+---
+
+<header class="admin-header">
+  <div class="header-content">
+    <div class="header-left">
+      <nav class="breadcrumbs">
+        {breadcrumbs.map((crumb, index) => (
+          <div class="breadcrumb-item">
+            {index > 0 && <span class="breadcrumb-separator">/</span>}
+            <a href={crumb.href} class="breadcrumb-link">{crumb.name}</a>
+          </div>
+        ))}
+      </nav>
+      <h1 class="page-title">{title}</h1>
+    </div>
+    
+    <div class="header-right">
+      <div class="user-info">
+        <div class="user-avatar">
+          <span class="avatar-text">AD</span>
+        </div>
+        <div class="user-details">
+          <span class="user-name">Administrador</span>
+          <span class="user-role">Admin</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .admin-header {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 1.5rem;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+    max-width: 100%;
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .breadcrumb-separator {
+    color: var(--color-text-secondary);
+  }
+
+  .breadcrumb-link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--color-primary);
+  }
+
+  .breadcrumb-item:last-child .breadcrumb-link {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+  }
+
+  .user-info:hover {
+    background-color: var(--color-background);
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .avatar-text {
+    line-height: 1;
+  }
+
+  .user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .user-name {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+
+  .user-role {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    line-height: 1.2;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .admin-header {
+      padding: 0 1rem;
+      margin-left: 0;
+    }
+
+    .header-content {
+      height: 3.5rem;
+    }
+
+    .page-title {
+      font-size: 1.25rem;
+    }
+
+    .breadcrumbs {
+      font-size: 0.75rem;
+    }
+
+    .user-details {
+      display: none;
+    }
+
+    .user-info {
+      padding: 0.25rem;
+    }
+  }
+
+  /* Mobile menu button spacing */
+  @media (max-width: 768px) {
+    .header-left {
+      margin-left: 3rem;
+    }
+  }
+</style>

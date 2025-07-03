@@ -1,0 +1,495 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Gestión de Usuarios" currentPage="users">
+  <div class="users-container">
+    <!-- Header with actions -->
+    <div class="users-header flex items-center justify-between mb-6">
+      <div>
+        <h1 class="page-title">Gestión de Usuarios</h1>
+        <p class="page-subtitle">Administra los usuarios del sistema</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('createUserModal')">
+        <span>+ Crear Usuario</span>
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card card mb-6">
+      <div class="card-body">
+        <div class="filters-grid grid grid-3 gap-4">
+          <div class="filter-group">
+            <label class="filter-label">Buscar por nombre</label>
+            <input type="text" class="filter-input" placeholder="Buscar usuarios..." id="searchInput">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Filtrar por rol</label>
+            <select class="filter-select" id="roleFilter">
+              <option value="">Todos los roles</option>
+              <option value="admin">Administrador</option>
+              <option value="user">Usuario</option>
+              <option value="editor">Editor</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Estado</label>
+            <select class="filter-select" id="statusFilter">
+              <option value="">Todos</option>
+              <option value="active">Activo</option>
+              <option value="inactive">Inactivo</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="users-table-card card">
+      <div class="card-header">
+        <h2>Lista de Usuarios</h2>
+        <span class="users-count">Total: 1,234 usuarios</span>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Fecha de Registro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <div class="user-details">
+                      <div class="user-name">Juan Pérez</div>
+                      <div class="user-id">#001</div>
+                    </div>
+                  </div>
+                </td>
+                <td>juan.perez@email.com</td>
+                <td><span class="role-badge admin">Administrador</span></td>
+                <td><span class="status-badge active">Activo</span></td>
+                <td>15/03/2024</td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-secondary" onclick="editUser(1)">Editar</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteUser(1)">Eliminar</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">MG</div>
+                    <div class="user-details">
+                      <div class="user-name">María González</div>
+                      <div class="user-id">#002</div>
+                    </div>
+                  </div>
+                </td>
+                <td>maria.gonzalez@email.com</td>
+                <td><span class="role-badge user">Usuario</span></td>
+                <td><span class="status-badge active">Activo</span></td>
+                <td>12/03/2024</td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-secondary" onclick="editUser(2)">Editar</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteUser(2)">Eliminar</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">CR</div>
+                    <div class="user-details">
+                      <div class="user-name">Carlos Rodríguez</div>
+                      <div class="user-id">#003</div>
+                    </div>
+                  </div>
+                </td>
+                <td>carlos.rodriguez@email.com</td>
+                <td><span class="role-badge editor">Editor</span></td>
+                <td><span class="status-badge inactive">Inactivo</span></td>
+                <td>10/03/2024</td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-secondary" onclick="editUser(3)">Editar</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteUser(3)">Eliminar</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination-container">
+          <div class="pagination-info">
+            Mostrando 1-10 de 1,234 usuarios
+          </div>
+          <div class="pagination-controls">
+            <button class="btn btn-sm btn-secondary" disabled>Anterior</button>
+            <button class="btn btn-sm btn-primary">1</button>
+            <button class="btn btn-sm btn-secondary">2</button>
+            <button class="btn btn-sm btn-secondary">3</button>
+            <button class="btn btn-sm btn-secondary">Siguiente</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create User Modal -->
+  <div id="createUserModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Crear Nuevo Usuario</h3>
+        <button class="modal-close" onclick="closeModal('createUserModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="createUserForm">
+          <div class="form-group">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" class="form-input" placeholder="Nombre completo" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" placeholder="email@ejemplo.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rol</label>
+            <select class="form-select" required>
+              <option value="">Seleccionar rol</option>
+              <option value="admin">Administrador</option>
+              <option value="user">Usuario</option>
+              <option value="editor">Editor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <input type="password" class="form-input" placeholder="Contraseña" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('createUserModal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="createUser()">Crear Usuario</button>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .users-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+  }
+
+  .page-subtitle {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .users-count {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .filter-input,
+  .filter-select {
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  .user-name {
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  .user-id {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+  }
+
+  .role-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .role-badge.admin {
+    background-color: #fecaca;
+    color: #dc2626;
+  }
+
+  .role-badge.user {
+    background-color: #dbeafe;
+    color: #2563eb;
+  }
+
+  .role-badge.editor {
+    background-color: #d1fae5;
+    color: #059669;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .status-badge.active {
+    background-color: #d1fae5;
+    color: #059669;
+  }
+
+  .status-badge.inactive {
+    background-color: #fef3c7;
+    color: #d97706;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .pagination-info {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .pagination-controls {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content {
+    background-color: var(--color-surface);
+    margin: 5% auto;
+    padding: 0;
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--color-text);
+    font-size: 0.875rem;
+  }
+
+  .form-input,
+  .form-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .users-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .filters-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .table-responsive {
+      font-size: 0.875rem;
+    }
+
+    .user-info {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .pagination-container {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>
+
+<script>
+  // Modal functionality
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = 'block';
+    }
+  }
+
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  }
+
+  // User actions
+  function editUser(userId) {
+    alert(`Editar usuario ID: ${userId}`);
+  }
+
+  function deleteUser(userId) {
+    if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+      alert(`Usuario ID: ${userId} eliminado`);
+    }
+  }
+
+  function createUser() {
+    alert('Usuario creado exitosamente');
+    closeModal('createUserModal');
+  }
+
+  // Close modal when clicking outside
+  window.onclick = function(event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
+</script>
